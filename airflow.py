@@ -26,7 +26,7 @@ class AirflowReq(object):
 
     def setDefaults(self) -> None:
         self.logger.info('Inicializando variaveis')
-        self.baseURL = "http://YOUR_AIRFLOW_URL/api/v1/dags"
+        self.baseURL = "http://YOUR_AIRFLOW_URL"
         airflow_username= "YOUR AIRFLOW USER"
         airflow_password= "YOUR AIRFLOW PASSWORD"
         base64_bytes = b64encode((f"{airflow_username}:{airflow_password}").encode("ascii")).decode("ascii")
@@ -35,11 +35,25 @@ class AirflowReq(object):
             'Authorization' : f'Basic {base64_bytes}'
         }
 
+    def extractIdsFromResponse(self, response:dict) -> list:
+        ids=[x['dag_id'] for x in response['dags']]
+        return ids
+
     def listAllActiveDags(self) -> list:
         self.logger.info('Listando todas as dags ativas')
-        payload = json.dumps({'only_active':'True',})
-        DAG_response = requests.request("GET", self.baseURL, headers=self.headers, data=payload)
-        dag_ids=[x['dag_id'] for x in DAG_response.json()['dags']]
+        limit_per_itr = 100
+        url = f'{self.baseURL}/api/v1/dags?only_active=true&limit={limit_per_itr}'
+        DAG_response = requests.request("GET", url=url, headers=self.headers)
+        total_entries = DAG_response.json()['total_entries']
+        self.logger.debug(f'total_entries: {total_entries}')
+        dag_ids = self.extractIdsFromResponse(DAG_response.json())
+        number_of_itr = (total_entries // limit_per_itr)
+        for next_itr in range(number_of_itr):
+            num_of_record = len(dag_ids)
+            new_airflow_url = f"{url}&offset={num_of_record}"
+            response = requests.get(new_airflow_url, headers=self.headers)
+            ids = self.extractIdsFromResponse(response.json())
+            dag_ids = dag_ids + ids
         self.logger.debug(f'dag_ids: {dag_ids}')
         return dag_ids
     
@@ -64,7 +78,7 @@ class AirflowReq(object):
     
     def getAllExecutionsByDagId(self, dag_id:str) -> list:
         self.logger.info(f'Consultando a dag: {dag_id}')
-        url = f'{self.baseURL}/~/dagRuns/list'
+        url = f'{self.baseURL}/api/v1/dags/~/dagRuns/list'
         end_date = datetime.today()
         start_date = (datetime.now() - timedelta(90))
         self.logger.debug(f'Consultando de {start_date} ate {end_date}')

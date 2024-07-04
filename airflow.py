@@ -57,25 +57,41 @@ class AirflowReq(object):
         self.logger.debug(f'dag_ids: {dag_ids}')
         return dag_ids
     
-    def filterDagsByPrefixSufix(self, dag_ids:list, prefix:str=None, suffix:str=None) -> list:
-        self.logger.info(f'Filtering dags with prefix {prefix} and sufix: {suffix}')
-        if prefix == None and suffix == None:
-            return dag_ids
-        if prefix is not None:
-            prefix = prefix.lower()
-        if suffix is not None:
-            suffix = suffix.lower()
+    def filterByPrefix(self, dag_ids:list, prefix:str) -> list:
         retList =[]
+        prefix = prefix.lower()
         for x in dag_ids:
-            if (prefix == None) and (x.lower().endswith(suffix)): # filtrar apenas pelo sufixo
+            if x.lower().startswith(prefix):
                 retList.append(x)
-            elif (suffix == None) and (x.lower().startswith(prefix)): # filtrar apenas pelo prefixo
-                retList.append(x)
-            else:
-                if (x.lower().startswith(prefix) and x.lower().endswith(suffix)): # filtrar por ambos
-                    retList.append(x)
-        self.logger.debug(f'filtered dag_ids: {retList}')
         return retList
+    
+    def filterBySuffix(self, dag_ids:list, suffix:str) -> list:
+        retList =[]
+        suffix = suffix.lower()
+        for x in dag_ids:
+            if x.lower().endswith(suffix):
+                retList.append(x)
+        return retList
+    
+    def filterByPrefixAndSuffix(self, dag_ids:list, prefix:str, suffix:str) -> list:
+        retList =[]
+        prefix = prefix.lower()
+        suffix = suffix.lower()
+        for x in dag_ids:
+            if (x.lower().startswith(prefix) and x.lower().endswith(suffix)):
+                retList.append(x)
+        return retList
+    
+    def filterDagsByPrefixSuffix(self, dag_ids:list, prefix:str=None, suffix:str=None) -> list:
+        self.logger.info(f'Filtering dags with prefix {prefix} and sufix: {suffix}')
+        if prefix is not None and suffix is not None:
+            return self.filterByPrefixAndSuffix(dag_ids, prefix, suffix)
+        elif prefix is None and suffix is not None:
+            return self.filterBySuffix(dag_ids=dag_ids, suffix=suffix)
+        elif prefix is not None and suffix is None:
+            return self.filterByPrefix(dag_ids=dag_ids, prefix=prefix)
+        else:
+            return dag_ids
 
     def timeFormat(self, time:datetime) -> str:
         return time.strftime('%Y-%m-%d'+'T'+'%H:%M:%S'+'Z')
@@ -124,7 +140,7 @@ class AirflowReq(object):
     def run(self, prefix:str=None, suffix:str=None):
         result_list = []
         active_dags = self.listAllActiveDags()
-        active_dags = self.filterDagsByPrefixSufix(active_dags, prefix, suffix)
+        active_dags = self.filterDagsByPrefixSuffix(active_dags, prefix, suffix)
         for dag in active_dags:
             list = self.getAllExecutionsByDagId(dag_id=dag)
             analyse = self.analyseDagRuns(dag_id=dag, run_list=list)
@@ -134,4 +150,4 @@ class AirflowReq(object):
 
 if __name__ == "__main__":
     airflow = AirflowReq()
-    airflow.run(prefix='DL', suffix='prd')
+    airflow.run()

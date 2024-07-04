@@ -57,18 +57,18 @@ class AirflowReq(object):
         self.logger.debug(f'dag_ids: {dag_ids}')
         return dag_ids
     
-    def filterDagsByPrefixSufix(self, dag_ids:list, prefix:str=None, sufix:str=None) -> list:
+    def filterDagsByPrefixSufix(self, dag_ids:list, prefix:str=None, suffix:str=None) -> list:
         self.logger.info(f'Filtering dags with prefix {prefix} and sufix: {sufix}')
         prefix = prefix.lower()
-        sufix = sufix.lower()
+        suffix = suffix.lower()
         retList =[]
         for x in dag_ids:
-            if (prefix == None) and (x.lower().endswith(sufix)): # filtrar apenas pelo sufixo
+            if (prefix == None) and (x.lower().endswith(suffix)): # filtrar apenas pelo sufixo
                 retList.append(x)
-            elif (sufix == None) and (x.lower().startswith(prefix)): # filtrar apenas pelo prefixo
+            elif (suffix == None) and (x.lower().startswith(prefix)): # filtrar apenas pelo prefixo
                 retList.append(x)
             else:
-                if (x.lower().startswith(prefix) and x.lower().endswith(sufix)): # filtrar por ambos
+                if (x.lower().startswith(prefix) and x.lower().endswith(suffix)): # filtrar por ambos
                     retList.append(x)
         self.logger.debug(f'filtered dag_ids: {retList}')
         return retList
@@ -117,10 +117,10 @@ class AirflowReq(object):
         self.logger.info(f'total runs: {total_runs} total fails: {total_fails}')
         return consolidate
 
-    def run(self):
+    def run(self, prefix:str, suffix:str):
         result_list = []
         active_dags = self.listAllActiveDags()
-        active_dags = self.filterDagsByPrefixSufix(active_dags, 'DL', 'prd')
+        active_dags = self.filterDagsByPrefixSufix(active_dags, prefix, suffix)
         for dag in active_dags:
             list = self.getAllExecutionsByDagId(dag_id=dag)
             analyse = self.analyseDagRuns(dag_id=dag, run_list=list)
@@ -130,4 +130,4 @@ class AirflowReq(object):
 
 if __name__ == "__main__":
     airflow = AirflowReq()
-    airflow.run()
+    airflow.run(prefix='DL', suffix='prd')

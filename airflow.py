@@ -59,8 +59,12 @@ class AirflowReq(object):
     
     def filterDagsByPrefixSufix(self, dag_ids:list, prefix:str=None, suffix:str=None) -> list:
         self.logger.info(f'Filtering dags with prefix {prefix} and sufix: {suffix}')
-        prefix = prefix.lower()
-        suffix = suffix.lower()
+        if prefix == None and suffix == None:
+            return dag_ids
+        if prefix is not None:
+            prefix = prefix.lower()
+        if suffix is not None:
+            suffix = suffix.lower()
         retList =[]
         for x in dag_ids:
             if (prefix == None) and (x.lower().endswith(suffix)): # filtrar apenas pelo sufixo
@@ -117,7 +121,7 @@ class AirflowReq(object):
         self.logger.info(f'total runs: {total_runs} total fails: {total_fails}')
         return consolidate
 
-    def run(self, prefix:str, suffix:str):
+    def run(self, prefix:str=None, suffix:str=None):
         result_list = []
         active_dags = self.listAllActiveDags()
         active_dags = self.filterDagsByPrefixSufix(active_dags, prefix, suffix)

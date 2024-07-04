@@ -58,7 +58,7 @@ class AirflowReq(object):
         return dag_ids
     
     def filterDagsByPrefixSufix(self, dag_ids:list, prefix:str=None, suffix:str=None) -> list:
-        self.logger.info(f'Filtering dags with prefix {prefix} and sufix: {sufix}')
+        self.logger.info(f'Filtering dags with prefix {prefix} and sufix: {suffix}')
         prefix = prefix.lower()
         suffix = suffix.lower()
         retList =[]

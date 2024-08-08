@@ -36,6 +36,30 @@ class AirflowReq(object):
             'Content-Type': 'application/json',
             'Authorization' : f'Basic {base64_bytes}'
         }
+        self.cookies = None
+
+    def executeRequest(self, method:str, url:str, payload:json=None):
+        try:
+            response = requests.request(method=method, 
+                                        url=url, 
+                                        data=payload,
+                                        headers=self.headers,
+                                        cookies=self.cookies)
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            error = f'HTTPError ao chamar a URL: {url} \n {e}'
+            raise SystemExit(error)
+        except requests.exceptions.Timeout:
+            error = f'Timeout ao chamar a URL: {url} \n {e}'
+            raise SystemExit(error)
+        except requests.exceptions.TooManyRedirects:
+            error = f'TooManyRedirects ao chamar a URL: {url} \n {e}'
+            raise SystemExit(error)
+        except requests.exceptions.RequestException as e:
+            error = f'Erro ao chamar a URL: {url} \n {e}'
+            raise SystemExit(error)
+
+        return response
 
     def extractIdsFromResponse(self, response:dict) -> list:
         ids=[x['dag_id'] for x in response['dags']]
@@ -45,7 +69,7 @@ class AirflowReq(object):
         self.logger.info('Listando todas as dags ativas')
         limit_per_itr = 100
         url = f'{self.baseURL}/api/v1/dags?only_active=true&limit={limit_per_itr}'
-        DAG_response = requests.request("GET", url=url, headers=self.headers)
+        DAG_response = self.executeRequest(method='GET', url=url)
         total_entries = DAG_response.json()['total_entries']
         self.logger.debug(f'total_entries: {total_entries}')
         dag_ids = self.extractIdsFromResponse(DAG_response.json())
@@ -53,7 +77,7 @@ class AirflowReq(object):
         for next_itr in range(number_of_itr):
             num_of_record = len(dag_ids)
             new_airflow_url = f"{url}&offset={num_of_record}"
-            response = requests.get(new_airflow_url, headers=self.headers)
+            response = self.executeRequest('GET',new_airflow_url)
             ids = self.extractIdsFromResponse(response.json())
             dag_ids = dag_ids + ids
         self.logger.debug(f'dag_ids: {dag_ids}')
@@ -107,7 +131,7 @@ class AirflowReq(object):
             'start_date_gte': self.timeFormat(start_date),
             'end_date_lte': self.timeFormat(end_date),
         })
-        DAG_response = requests.request("POST", url, headers=self.headers, data=payload)
+        DAG_response = self.executeRequest(method='POST', url=url, payload=payload)
         self.logger.debug(DAG_response.json()['dag_runs'])
         return DAG_response.json()['dag_runs']
     

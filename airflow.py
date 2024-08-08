@@ -37,8 +37,13 @@ class AirflowReq(object):
             'Authorization' : f'Basic {base64_bytes}'
         }
         self.cookies = None
+        self.cookies_expiration = None
 
     def executeRequest(self, method:str, url:str, payload:json=None):
+        if (self.cookies is not None):
+            if (datetime.now() >= self.cookies_expiration):
+                self.setDefaults()
+
         try:
             response = requests.request(method=method, 
                                         url=url, 

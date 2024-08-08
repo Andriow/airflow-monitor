@@ -14,7 +14,7 @@ class AirflowMWAA(AirflowReq):
     # reference: https://docs.aws.amazon.com/pt_br/mwaa/latest/userguide/access-mwaa-apache-airflow-rest-api.html
     def setDefaults(self) -> None:
         self.logger.info('Inicializando variaveis')
-        region = 'sa-east-1'
+        region = 'sa-east'
         env_name = 'qas'
         mwaa = boto3.client('mwaa', region_name=region)
         response = mwaa.create_web_login_token(Name=env_name)
@@ -28,7 +28,8 @@ class AirflowMWAA(AirflowReq):
         #Este token expira após 60 segundos.
         login_payload = {"token": web_token}
 
-        # O token da sessão expira após 12 horas.
+        # O token da sessão expira após 12 horas, criando controle para 9 horas por segurança.
+        self.cookies_expiration = datetime.now() + timedelta(hours=9)
         response = self.executeRequest(
             method='POST',
             url=login_url,
@@ -37,7 +38,7 @@ class AirflowMWAA(AirflowReq):
 
         self.headers = None
         self.cookies = response.cookies["session"]
-        self.cookies_expiration = datetime.now() + timedelta(hours=9)
+        
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Monitoramento de dags com erros no airflow gerenciado pela AWS.')

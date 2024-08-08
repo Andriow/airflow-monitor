@@ -1,7 +1,7 @@
 import sys
 import boto3
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
 from airflow import AirflowReq
 
 class AirflowMWAA(AirflowReq):
@@ -11,9 +11,10 @@ class AirflowMWAA(AirflowReq):
         self.initializeLogger(logger=logger)
         self.setDefaults()
 
+    # reference: https://docs.aws.amazon.com/pt_br/mwaa/latest/userguide/access-mwaa-apache-airflow-rest-api.html
     def setDefaults(self) -> None:
         self.logger.info('Inicializando variaveis')
-        region = 'sa-east'
+        region = 'sa-east-1'
         env_name = 'qas'
         mwaa = boto3.client('mwaa', region_name=region)
         response = mwaa.create_web_login_token(Name=env_name)
@@ -24,15 +25,19 @@ class AirflowMWAA(AirflowReq):
         self.baseURL = f'https://{web_server_host_name}'
 
         login_url = f"{self.baseURL}/aws_mwaa/login"
+        #Este token expira após 60 segundos.
         login_payload = {"token": web_token}
 
+        # O token da sessão expira após 12 horas.
         response = self.executeRequest(
             method='POST',
             url=login_url,
-            data=login_payload)
+            data=login_payload,
+            timeout=50)
 
         self.headers = None
         self.cookies = response.cookies["session"]
+        self.cookies_expiration = datetime.now() + timedelta(hours=9)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Monitoramento de dags com erros no airflow gerenciado pela AWS.')

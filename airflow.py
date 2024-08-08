@@ -1,5 +1,7 @@
+import sys
 import json
 import logging
+import argparse
 import requests
 from base64 import b64encode
 from datetime import datetime, timedelta
@@ -96,11 +98,9 @@ class AirflowReq(object):
     def timeFormat(self, time:datetime) -> str:
         return time.strftime('%Y-%m-%d'+'T'+'%H:%M:%S'+'Z')
     
-    def getAllExecutionsByDagId(self, dag_id:str) -> list:
+    def getAllExecutionsByDagId(self, dag_id:str, start_date:datetime, end_date:datetime) -> list:
         self.logger.info(f'Consultando a dag: {dag_id}')
         url = f'{self.baseURL}/api/v1/dags/~/dagRuns/list'
-        end_date = datetime.today()
-        start_date = (datetime.now() - timedelta(90))
         self.logger.debug(f'Consultando de {start_date} ate {end_date}')
         payload = json.dumps({
             'dag_ids': [dag_id],
@@ -137,17 +137,40 @@ class AirflowReq(object):
         self.logger.info(f'total runs: {total_runs} total fails: {total_fails}')
         return consolidate
 
-    def run(self, prefix:str=None, suffix:str=None):
+    def run(self, end_date:datetime, qtdDias:int, prefix:str=None, suffix:str=None):
         result_list = []
         active_dags = self.listAllActiveDags()
         active_dags = self.filterDagsByPrefixSuffix(active_dags, prefix, suffix)
+        start_date = (end_date - timedelta(qtdDias))
+        self.logger.info(f'Consultando de {start_date} ate {end_date}')
         for dag in active_dags:
-            list = self.getAllExecutionsByDagId(dag_id=dag)
+            list = self.getAllExecutionsByDagId(dag_id=dag, 
+                                                start_date=start_date, 
+                                                end_date=end_date)
             analyse = self.analyseDagRuns(dag_id=dag, run_list=list)
             result_list.append(analyse)
         consolidate = self.consolidateResults(result_list=result_list)
         self.logger.info(f'resultado final: {consolidate}')
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Monitoramento de dags com erros no airflow.')
+    parser.add_argument('-d', '--dataFim', type=str, default=datetime.today().strftime('%Y-%m-%d'), 
+                        help='Data da última execução a ser verificada. Formato: YYYY-MM-DDD. Default = hoje.')
+    parser.add_argument('-q', '--qtdDias', type=int, default=90, 
+                        help='Quantidade de dias antes da data de fim a ser considerado para a análise. Default = 90')
+    parser.add_argument('-p', '--prefix', type=str, default=None, 
+                        help='Prefixo que a DAG deverá ter no nome para entrar na análise.')
+    parser.add_argument('-s', '--suffix', type=str, default=None, 
+                        help='Sufixo que a DAG deverá ter no nome para entrar na análise.')
+    args = parser.parse_args()
+    try:
+        date_format = '%Y-%m-%d'
+        dataFim = datetime.strptime(args.dataFim, date_format)
+    except:
+        print(f'data em formato inválido: {args.dataFim}, formato esperado: YYYY-MM-DD')
+        sys.exit(1)
     airflow = AirflowReq()
-    airflow.run()
+    airflow.run(end_date=dataFim,
+                qtdDias=args.qtdDias,
+                prefix=args.prefix,
+                suffix=args.suffix)

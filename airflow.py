@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import logging
@@ -28,9 +29,12 @@ class AirflowReq(object):
 
     def setDefaults(self) -> None:
         self.logger.info('Inicializando variaveis')
-        self.baseURL = "http://YOUR_AIRFLOW_URL"
-        airflow_username= "YOUR AIRFLOW USER"
-        airflow_password= "YOUR AIRFLOW PASSWORD"
+        self.baseURL = os.environ.get('AIRFLOW_URL')
+        airflow_username = os.environ.get('AIRFLOW_USERNAME')
+        airflow_password = os.environ.get('AIRFLOW_PASSWORD')
+        if None in (self.baseURL, airflow_username, airflow_password):
+            error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
+            raise SystemExit(error)
         base64_bytes = b64encode((f"{airflow_username}:{airflow_password}").encode("ascii")).decode("ascii")
         self.headers = {
             'Content-Type': 'application/json',

@@ -15,7 +15,9 @@ ENV AWS_REGION="YOUR-REGION" \
 
 Para execução em ambiente próprio, ou em alguma ferramenta gerenciada que permita login por usuário e senha, será necessário alterar as seguintes informações antes de compilar o container:
 > AIRFLOW_URL="http://YOUR_AIRFLOW_URL"
+
 > AIRFLOW_USERNAME="YOUR AIRFLOW USER"
+
 > AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD"
 
 Nesse caso pode deixar as variáveis relacionadas a AWS com o valor padrão.
@@ -34,7 +36,9 @@ ENV AWS_REGION="YOUR-REGION" \
 
 Para execução no MWAA da AWS será necessário alterar as seguintes informações antes de compilar o container:
 > AWS_REGION="YOUR-REGION"
+
 > AWS_ACCESS_KEY_ID="YOUR-KEY-ID"
+
 > AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY"
 
 # Compilação do container
@@ -45,6 +49,7 @@ Para dar o build no container deverá executar o comando:
 # Como executar
 Para a execução existem dois arquivos distintos:
 > airflow.py
+
 > airflowMWAA.py
 
 Os dois scripts possuem exatamente a mesma forma de ser executado, alterando apenas a forma de realizar a autenticação, então pode-se executar os dois scripts da mesma fora.

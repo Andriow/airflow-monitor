@@ -1,3 +1,4 @@
+import os
 import sys
 import boto3
 import argparse
@@ -14,8 +15,13 @@ class AirflowMWAA(AirflowReq):
     # reference: https://docs.aws.amazon.com/pt_br/mwaa/latest/userguide/access-mwaa-apache-airflow-rest-api.html
     def setDefaults(self) -> None:
         self.logger.info('Inicializando variaveis')
-        region = 'sa-east'
-        env_name = 'qas'
+        
+        region = os.environ.get('AWS_REGION')
+        env_name = os.environ.get('AWS_AIRFLOW_NAME')
+        if None in (region, env_name):
+            error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
+            raise SystemExit(error)
+
         mwaa = boto3.client('mwaa', region_name=region)
         response = mwaa.create_web_login_token(Name=env_name)
 

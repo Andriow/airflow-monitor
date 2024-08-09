@@ -8,17 +8,18 @@ No Dockerfile possui as variáveis de ambiente do container:
 ENV AWS_REGION="YOUR-REGION" \
     AWS_ACCESS_KEY_ID="YOUR-KEY-ID" \
     AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY" \
+    AWS_AIRFLOW_NAME="YOUR AIRFLOW NAME ON MWAA" \
     AIRFLOW_URL="http://YOUR_AIRFLOW_URL" \
     AIRFLOW_USERNAME="YOUR AIRFLOW USER" \
     AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD"
 ```
 
 Para execução em ambiente próprio, ou em alguma ferramenta gerenciada que permita login por usuário e senha, será necessário alterar as seguintes informações antes de compilar o container:
-> AIRFLOW_URL="http://YOUR_AIRFLOW_URL"
+> AIRFLOW_URL="http://YOUR_AIRFLOW_URL" -> URL da tela inicial do Airflow 
 
-> AIRFLOW_USERNAME="YOUR AIRFLOW USER"
+> AIRFLOW_USERNAME="YOUR AIRFLOW USER" -> Usuário que é utilizado para fazer login no Airflow
 
-> AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD"
+> AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD" -> Senha do usuário que é utilizada para fazer login no Airflow
 
 Nesse caso pode deixar as variáveis relacionadas a AWS com o valor padrão.
 
@@ -29,17 +30,22 @@ No Dockerfile possui as variáveis de ambiente do container:
 ENV AWS_REGION="YOUR-REGION" \
     AWS_ACCESS_KEY_ID="YOUR-KEY-ID" \
     AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY" \
+    AWS_AIRFLOW_NAME="YOUR AIRFLOW NAME ON MWAA" \
     AIRFLOW_URL="http://YOUR_AIRFLOW_URL" \
     AIRFLOW_USERNAME="YOUR AIRFLOW USER" \
     AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD"
 ```
 
 Para execução no MWAA da AWS será necessário alterar as seguintes informações antes de compilar o container:
-> AWS_REGION="YOUR-REGION"
+> AWS_REGION="YOUR-REGION" -> Região em que está hospedado o MWAA
 
-> AWS_ACCESS_KEY_ID="YOUR-KEY-ID"
+> AWS_ACCESS_KEY_ID="YOUR-KEY-ID" -> Access Key ID do usuário programático que tem permissões de acesso ao airflow
 
-> AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY"
+> AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY" -> Secret Access Key do usuário programático que tem permissões de acesso ao airflow
+
+> AWS_AIRFLOW_NAME="YOUR AIRFLOW NAME ON MWAA" -> Nome do ambiente do Airflow configurado no MWAA
+
+Nesse caso pode deixar as variáveis relacionadas ao login com usuário e senha com o valor padrão.
 
 # Compilação do container
 Para dar o build no container deverá executar o comando:

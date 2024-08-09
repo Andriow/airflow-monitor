@@ -44,7 +44,9 @@ Para execução no MWAA da AWS será necessário alterar as seguintes informaç�
 # Compilação do container
 Para dar o build no container deverá executar o comando:
 
-> docker build -t airflow-monitor:latest -f Dockerfile .
+```sh
+docker build -t airflow-monitor:latest -f Dockerfile .
+```
 
 # Como executar
 Para a execução existem dois arquivos distintos:
@@ -56,7 +58,9 @@ Os dois scripts possuem exatamente a mesma forma de ser executado, alterando ape
 
 O primeiro passo será de entrar no Container compilado:
 
-> docker run --rm -it --entrypoint bash airflow-monitor:latest
+```sh
+docker run --rm -it --entrypoint bash airflow-monitor:latest
+```
 
 Uma vez no container poderá ser executado o script com seus parâmetros:
 

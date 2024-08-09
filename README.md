@@ -1,25 +1,57 @@
 # airflow-monitor
-Projeto para monitoramento do airflow
+Projeto para monitoramento de execuções de DAGs com falhas no airflow
 
-# Como compilar
-Para compilar o projeto é preciso alterar o Dockerfile com as credenciais necessárias.
+# Configuração do docker para uso em ambiente próprio
+No Dockerfile possui as variáveis de ambiente do container:
 
-Caso você queira executar no ambiente MWAA não é necessário preencher as informações de  URL, username e password, pois o MWAA realiza o login utilizando o boto3.
+```Dockerfile
+ENV AWS_REGION="YOUR-REGION" \
+    AWS_ACCESS_KEY_ID="YOUR-KEY-ID" \
+    AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY" \
+    AIRFLOW_URL="http://YOUR_AIRFLOW_URL" \
+    AIRFLOW_USERNAME="YOUR AIRFLOW USER" \
+    AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD"
+```
 
-Caso você queira executar em um ambiente local de airflow, será necessário indicar a URL o username e a senha para que a API possa autenticar, e não será necessário indicar as credenciais de AWS.
+Para execução em ambiente próprio, ou em alguma ferramenta gerenciada que permita login por usuário e senha, será necessário alterar as seguintes informações antes de compilar o container:
+> AIRFLOW_URL="http://YOUR_AIRFLOW_URL"
+> AIRFLOW_USERNAME="YOUR AIRFLOW USER"
+> AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD"
 
+Nesse caso pode deixar as variáveis relacionadas a AWS com o valor padrão.
+
+# Configuração do docker para uso no ambiente AWS utilizando o MWAA
+No Dockerfile possui as variáveis de ambiente do container:
+
+```Dockerfile
+ENV AWS_REGION="YOUR-REGION" \
+    AWS_ACCESS_KEY_ID="YOUR-KEY-ID" \
+    AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY" \
+    AIRFLOW_URL="http://YOUR_AIRFLOW_URL" \
+    AIRFLOW_USERNAME="YOUR AIRFLOW USER" \
+    AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD"
+```
+
+Para execução no MWAA da AWS será necessário alterar as seguintes informações antes de compilar o container:
+> AWS_REGION="YOUR-REGION"
+> AWS_ACCESS_KEY_ID="YOUR-KEY-ID"
+> AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY"
+
+# Compilação do container
 Para dar o build no container deverá executar o comando:
 
-```sh
-docker build -t airflow-monitor:latest -f Dockerfile .
-```
+> docker build -t airflow-monitor:latest -f Dockerfile .
 
 # Como executar
+Para a execução existem dois arquivos distintos:
+> airflow.py
+> airflowMWAA.py
+
+Os dois scripts possuem exatamente a mesma forma de ser executado, alterando apenas a forma de realizar a autenticação, então pode-se executar os dois scripts da mesma fora.
+
 O primeiro passo será de entrar no Container compilado:
 
-```sh
-docker run --rm -it --entrypoint bash airflow-monitor:latest
-```
+> docker run --rm -it --entrypoint bash airflow-monitor:latest
 
 Uma vez no container poderá ser executado o script com seus parâmetros:
 
@@ -40,8 +72,6 @@ options:
   -s SUFFIX, --suffix SUFFIX
                         Sufixo que a DAG deverá ter no nome para entrar na análise.
 ```
-
-Todos os parâmetros são opcionais, caso não seja indicado nenhum prefixo nem nenhum sufixo o script irá considerar todas as DAGs ativas no airflow.
 
 Para uma execução de teste, que irá retornar o log de execução dos últimos 10 dias, rodar da seguinte forma:
 ```sh

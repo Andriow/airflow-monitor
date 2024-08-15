@@ -1,4 +1,4 @@
-FROM python:3.11.4-slim AS build
+FROM python:3.11.3-slim AS build
 
 COPY . /monitor/
 WORKDIR /monitor

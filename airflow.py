@@ -34,7 +34,7 @@ class AirflowReq(object):
         airflow_password = os.environ.get('AIRFLOW_PASSWORD')
         if None in (self.baseURL, airflow_username, airflow_password):
             error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
-            raise SystemExit(error)
+            raise ValueError(error)
         base64_bytes = b64encode((f"{airflow_username}:{airflow_password}").encode("ascii")).decode("ascii")
         self.headers = {
             'Content-Type': 'application/json',

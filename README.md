@@ -28,7 +28,7 @@ Nesse caso pode deixar as variáveis relacionadas ao login com usuário e senha 
 Para dar o build no container deverá executar o comando:
 
 ```sh
-docker build -t carga_receita_federal_cnpj:py3.11.4-qas --build-arg AWS_REGION=YOUR-REGION --build-arg AWS_ACCESS_KEY_ID=YOUR-KEY-ID --build-arg AWS_SECRET_ACCESS_KEY=YOUR-SECRET-KEY --build-arg AWS_AIRFLOW_NAME=YOUR-AIRFLOW-NAME --build-arg AIRFLOW_URL=YOUR-AIRFLOW-URL --build-arg AIRFLOW_USERNAME=YOUR-AIRFLOW-USERNAME --build-arg AIRFLOW_PASSWORD=YOUR-AIRFLOW-PASSWORD . --no-cache
+docker build -t airflow-monitor:latest --build-arg AWS_REGION=YOUR-REGION --build-arg AWS_ACCESS_KEY_ID=YOUR-KEY-ID --build-arg AWS_SECRET_ACCESS_KEY=YOUR-SECRET-KEY --build-arg AWS_AIRFLOW_NAME=YOUR-AIRFLOW-NAME --build-arg AIRFLOW_URL=YOUR-AIRFLOW-URL --build-arg AIRFLOW_USERNAME=YOUR-AIRFLOW-USERNAME --build-arg AIRFLOW_PASSWORD=YOUR-AIRFLOW-PASSWORD . --no-cache
 ```
 
 # Como executar

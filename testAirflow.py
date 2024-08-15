@@ -88,6 +88,8 @@ class TestAirflow(unittest.TestCase):
         self.assertEqual(len(ret), 1)
         ret = self.airflow.filterDagsByPrefixSuffix(dag_ids=dag_ids, prefix='BI', suffix='prd')
         self.assertEqual(len(ret), 1)
+        ret = self.airflow.filterDagsByPrefixSuffix(dag_ids=dag_ids)
+        self.assertEqual(len(ret), 4)
 
     def testTimeFormat(self):
         date = datetime.strptime('2024-08-15_12:30:30', "%Y-%m-%d_%H:%M:%S")

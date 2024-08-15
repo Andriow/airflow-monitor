@@ -50,7 +50,45 @@ class TestAirflow(unittest.TestCase):
         ret = self.airflow.extractIdsFromResponse(response=dict)
         self.assertEqual([1,2], ret)
 
-    
+    def testFilterByPrefix(self):
+        dag_ids = []
+        dag_ids.append('DL_test_prd')
+        dag_ids.append('dl_test_PRD')
+        dag_ids.append('bi_test_prd')
+        ret = self.airflow.filterByPrefix(dag_ids=dag_ids, prefix='dl')
+        self.assertEqual(len(ret), 2)
+
+    def testFilterBySuffix(self):
+        dag_ids = []
+        dag_ids.append('DL_test_prd')
+        dag_ids.append('dl_test_PRD')
+        dag_ids.append('bi_test_pRd')
+        dag_ids.append('bi_test_qas')
+        ret = self.airflow.filterBySuffix(dag_ids=dag_ids, suffix='prd')
+        self.assertEqual(len(ret), 3)
+
+    def testFilterByPrefixAndSuffix(self):
+        dag_ids = []
+        dag_ids.append('DL_test_prd')
+        dag_ids.append('dl_test_PRD')
+        dag_ids.append('bi_test_pRd')
+        dag_ids.append('bi_test_qas')
+        ret = self.airflow.filterByPrefixAndSuffix(dag_ids=dag_ids, prefix='DL', suffix='prd')
+        self.assertEqual(len(ret), 2)
+
+    def testFilterDagsByPrefixSuffix(self):
+        dag_ids = []
+        dag_ids.append('DL_test_prd')
+        dag_ids.append('dl_test_PRD')
+        dag_ids.append('bi_test_pRd')
+        dag_ids.append('bi_test_qas')
+        ret = self.airflow.filterDagsByPrefixSuffix(dag_ids=dag_ids, prefix='Dl')
+        self.assertEqual(len(ret), 2)
+        ret = self.airflow.filterDagsByPrefixSuffix(dag_ids=dag_ids, suffix='QAS')
+        self.assertEqual(len(ret), 1)
+        ret = self.airflow.filterDagsByPrefixSuffix(dag_ids=dag_ids, prefix='BI', suffix='prd')
+        self.assertEqual(len(ret), 1)
+
 
 if __name__ == '__main__':
     unittest.main()  # pragma: no cover

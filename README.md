@@ -92,3 +92,19 @@ Para uma execução de teste, que irá retornar o log de execução dos últimos
 ```sh
 python3 airflow.py -q 10
 ```
+
+### Para testar
+
+Dentro do container executar os seguintes comandos:
+
+```
+# executar os testes
+python3 -m unittest test_runner.py
+
+# adicionar a validação de cobertura de testes
+coverage erase
+
+coverage run test_runner.py
+
+coverage report -m
+```

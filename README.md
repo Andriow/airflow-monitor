@@ -99,12 +99,12 @@ Dentro do container executar os seguintes comandos:
 
 ```
 # executar os testes
-python3 -m unittest test_runner.py
+python3 -m unittest testAirflow.py
 
 # adicionar a validação de cobertura de testes
 coverage erase
 
-coverage run test_runner.py
+coverage run testAirflow.py
 
 coverage report -m
 ```

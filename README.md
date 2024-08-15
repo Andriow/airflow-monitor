@@ -2,18 +2,6 @@
 Projeto para monitoramento de execuções de DAGs com falhas no airflow
 
 # Configuração do docker para uso em ambiente próprio
-No Dockerfile possui as variáveis de ambiente do container:
-
-```Dockerfile
-ENV AWS_REGION="YOUR-REGION" \
-    AWS_ACCESS_KEY_ID="YOUR-KEY-ID" \
-    AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY" \
-    AWS_AIRFLOW_NAME="YOUR AIRFLOW NAME ON MWAA" \
-    AIRFLOW_URL="http://YOUR_AIRFLOW_URL" \
-    AIRFLOW_USERNAME="YOUR AIRFLOW USER" \
-    AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD"
-```
-
 Para execução em ambiente próprio, ou em alguma ferramenta gerenciada que permita login por usuário e senha, será necessário alterar as seguintes informações antes de compilar o container:
 > AIRFLOW_URL="http://YOUR_AIRFLOW_URL" -> URL da tela inicial do Airflow 
 
@@ -21,20 +9,9 @@ Para execução em ambiente próprio, ou em alguma ferramenta gerenciada que per
 
 > AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD" -> Senha do usuário que é utilizada para fazer login no Airflow
 
-Nesse caso pode deixar as variáveis relacionadas a AWS com o valor padrão.
+Nesse caso pode deixar as variáveis relacionadas a AWS com um valor padrão.
 
 # Configuração do docker para uso no ambiente AWS utilizando o MWAA
-No Dockerfile possui as variáveis de ambiente do container:
-
-```Dockerfile
-ENV AWS_REGION="YOUR-REGION" \
-    AWS_ACCESS_KEY_ID="YOUR-KEY-ID" \
-    AWS_SECRET_ACCESS_KEY="YOUR-SECRET-ACCESS-KEY" \
-    AWS_AIRFLOW_NAME="YOUR AIRFLOW NAME ON MWAA" \
-    AIRFLOW_URL="http://YOUR_AIRFLOW_URL" \
-    AIRFLOW_USERNAME="YOUR AIRFLOW USER" \
-    AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD"
-```
 
 Para execução no MWAA da AWS será necessário alterar as seguintes informações antes de compilar o container:
 > AWS_REGION="YOUR-REGION" -> Região em que está hospedado o MWAA
@@ -45,13 +22,13 @@ Para execução no MWAA da AWS será necessário alterar as seguintes informaç�
 
 > AWS_AIRFLOW_NAME="YOUR AIRFLOW NAME ON MWAA" -> Nome do ambiente do Airflow configurado no MWAA
 
-Nesse caso pode deixar as variáveis relacionadas ao login com usuário e senha com o valor padrão.
+Nesse caso pode deixar as variáveis relacionadas ao login com usuário e senha com um valor padrão.
 
 # Compilação do container
 Para dar o build no container deverá executar o comando:
 
 ```sh
-docker build -t airflow-monitor:latest -f Dockerfile .
+docker build -t carga_receita_federal_cnpj:py3.11.4-qas --build-arg AWS_REGION=YOUR-REGION --build-arg AWS_ACCESS_KEY_ID=YOUR-KEY-ID --build-arg AWS_SECRET_ACCESS_KEY=YOUR-SECRET-KEY --build-arg AWS_AIRFLOW_NAME=YOUR-AIRFLOW-NAME --build-arg AIRFLOW_URL=YOUR-AIRFLOW-URL --build-arg AIRFLOW_USERNAME=YOUR-AIRFLOW-USERNAME --build-arg AIRFLOW_PASSWORD=YOUR-AIRFLOW-PASSWORD . --no-cache
 ```
 
 # Como executar

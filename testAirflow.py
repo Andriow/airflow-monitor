@@ -17,11 +17,6 @@ class TestAirflow(unittest.TestCase):
         self.className = 'AirflowTest'
         l = logging.getLogger(self.className)
         l.setLevel(logging.ERROR)
-        ch = logging.StreamHandler()
-        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        ch.setFormatter(formatter)
-        ch.addFilter(logging.Filter(self.className))
-        l.addHandler(ch)
         self.airflow = AirflowReq(logger = l)
 
     def testLogger01(self):
@@ -34,7 +29,6 @@ class TestAirflow(unittest.TestCase):
         self.assertEqual(logger.name, self.className)
 
     def testSetDefaults01(self):
-        
         headers = self.airflow.headers
         cookies = self.airflow.cookies
         cookies_expiration = self.airflow.cookies_expiration
@@ -42,6 +36,21 @@ class TestAirflow(unittest.TestCase):
         self.assertTrue('Authorization' in headers)
         self.assertIsNone(cookies)
         self.assertGreater(cookies_expiration, datetime.now())
+
+    def testSetDefaults02(self):
+        del os.environ['AIRFLOW_URL']
+        error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
+        with self.assertRaises(ValueError) as ctx:
+            self.airflow.setDefaults()
+        self.assertEqual(error, str(ctx.exception))
+
+    def testExtractIdsFromResponse(self):
+        dict = {}
+        dict['dags'] = [{'dag_id':1}, {'dag_id':2}]
+        ret = self.airflow.extractIdsFromResponse(response=dict)
+        self.assertEqual([1,2], ret)
+
+    
 
 if __name__ == '__main__':
     unittest.main()  # pragma: no cover

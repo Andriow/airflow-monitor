@@ -89,6 +89,36 @@ class TestAirflow(unittest.TestCase):
         ret = self.airflow.filterDagsByPrefixSuffix(dag_ids=dag_ids, prefix='BI', suffix='prd')
         self.assertEqual(len(ret), 1)
 
+    def testTimeFormat(self):
+        date = datetime.strptime('2024-08-15_12:30:30', "%Y-%m-%d_%H:%M:%S")
+        ret = self.airflow.timeFormat(date)
+        self.assertEqual(ret, '2024-08-15T12:30:30Z')
+
+    def testAnalyseDagRuns(self):
+        dag_id = 'test'
+        lst = []
+        lst.append({'state':'success'})
+        lst.append({'state':'success'})
+        lst.append({'state':'failed'})
+        lst.append({'state':'success'})
+        lst.append({'state':'success'})
+        lst.append({'state':'success'})
+        lst.append({'state':'failed'})
+        lst.append({'state':'success'})
+        lst.append({'state':'failed'})
+        lst.append({'state':'success'})
+        ret = self.airflow.analyseDagRuns(dag_id=dag_id, run_list=lst)
+        self.assertEqual(ret['dag_id'], dag_id)
+        self.assertEqual(ret['run_count'], 10)
+        self.assertEqual(ret['fail_count'], 3)
+
+    def testConsolidateResults(self):
+        lst = []
+        lst.append({'dag_id': '1', 'run_count': 10, 'fail_count':3})
+        lst.append({'dag_id': '2', 'run_count': 10, 'fail_count':2})
+        lst.append({'dag_id': '3', 'run_count': 10, 'fail_count':1})
+        ret = self.airflow.consolidateResults(result_list=lst)
+        self.assertAlmostEqual(ret, 0.2)
 
 if __name__ == '__main__':
     unittest.main()  # pragma: no cover

@@ -37,7 +37,7 @@ Para a execução existem dois arquivos distintos:
 
 > airflowMWAA.py
 
-Os dois scripts possuem exatamente a mesma forma de ser executado, alterando apenas a forma de realizar a autenticação, então pode-se executar os dois scripts da mesma fora.
+Os dois scripts possuem exatamente a mesma forma de ser executado, alterando apenas a forma de realizar a autenticação, então pode-se executar os dois scripts da mesma forma.
 
 O primeiro passo será de entrar no Container compilado:
 

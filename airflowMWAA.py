@@ -2,40 +2,39 @@ import os
 import sys
 import boto3
 import argparse
-from datetime import datetime, timedelta
-from airflow import AirflowReq
+from datetime import datetime
+from airflow import AirflowMonitor
 
-class AirflowMWAA(AirflowReq):
+# reference: https://docs.aws.amazon.com/pt_br/mwaa/latest/userguide/access-mwaa-apache-airflow-rest-api.html
+class AirflowMWAA(AirflowMonitor):
     def __init__(self, logger: object = None) -> None:
         super().__init__()
         self.className = 'AirflowMWAA'
         self.initializeLogger(logger=logger)
         self.setDefaults()
 
-    # reference: https://docs.aws.amazon.com/pt_br/mwaa/latest/userguide/access-mwaa-apache-airflow-rest-api.html
+    def getEnvironmentVariables(self):
+        self.region = os.environ.get('AWS_REGION')
+        self.env_name = os.environ.get('AWS_AIRFLOW_NAME')
+        if 'NULL' in (self.region, self.env_name):
+            error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
+            raise ValueError(error)
+
+    def createFirstAuth(self, region_name:str, env_name:str) -> str:
+        mwaa = boto3.client('mwaa', region_name=region_name)
+        response = mwaa.create_web_login_token(Name=env_name)
+        self.baseURL = f'https://{response["WebServerHostname"]}'
+        return response["WebToken"]
+
     def setDefaults(self) -> None:
         self.logger.info('Inicializando variaveis')
+
+        self.getEnvironmentVariables()
+        web_token = self.createFirstAuth(region_name=self.region, env_name=self.env_name)
         
-        region = os.environ.get('AWS_REGION')
-        env_name = os.environ.get('AWS_AIRFLOW_NAME')
-        if None in (region, env_name):
-            error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
-            raise SystemExit(error)
-
-        mwaa = boto3.client('mwaa', region_name=region)
-        response = mwaa.create_web_login_token(Name=env_name)
-
-        web_server_host_name = response["WebServerHostname"]
-        web_token = response["WebToken"]
-
-        self.baseURL = f'https://{web_server_host_name}'
-
+        self.setCookiesExpiration()
         login_url = f"{self.baseURL}/aws_mwaa/login"
-        #Este token expira após 60 segundos.
-        login_payload = {"token": web_token}
-
-        # O token da sessão expira após 12 horas, criando controle para 9 horas por segurança.
-        self.cookies_expiration = datetime.now() + timedelta(hours=9)
+        login_payload = {"token": web_token} #Este token expira após 60 segundos.
         response = self.executeRequest(
             method='POST',
             url=login_url,

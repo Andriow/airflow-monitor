@@ -2,7 +2,7 @@ import os
 import logging
 import unittest
 from datetime import datetime
-from airflow import AirflowReq
+from airflow import AirflowMonitor
 
 class TestAirflow(unittest.TestCase):
     def setUp(self):
@@ -17,32 +17,35 @@ class TestAirflow(unittest.TestCase):
         self.className = 'AirflowTest'
         l = logging.getLogger(self.className)
         l.setLevel(logging.ERROR)
-        self.airflow = AirflowReq(logger = l)
+        self.airflow = AirflowMonitor(logger = l)
 
     def testLogger01(self):
-        airflow = AirflowReq()
+        airflow = AirflowMonitor()
         logger = airflow.logger
-        self.assertEqual(logger.name, 'AirflowReq')
+        self.assertEqual(logger.name, 'AirflowMonitor')
     
     def testLogger02(self):
         logger = self.airflow.logger
         self.assertEqual(logger.name, self.className)
 
-    def testSetDefaults01(self):
+    def testSetDefaults(self):
         headers = self.airflow.headers
         cookies = self.airflow.cookies
-        cookies_expiration = self.airflow.cookies_expiration
         self.assertTrue('Content-Type' in headers)
         self.assertTrue('Authorization' in headers)
         self.assertIsNone(cookies)
-        self.assertGreater(cookies_expiration, datetime.now())
 
-    def testSetDefaults02(self):
+    def testGetEnvironmentVariables(self):
         del os.environ['AIRFLOW_URL']
+        self.airflow.getEnvironmentVariables()
         error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
         with self.assertRaises(ValueError) as ctx:
             self.airflow.setDefaults()
         self.assertEqual(error, str(ctx.exception))
+
+    def testSetCookiesExpiration(self):
+        cookies_expiration = self.airflow.cookies_expiration
+        self.assertGreater(cookies_expiration, datetime.now())
 
     def testExtractIdsFromResponse(self):
         dict = {}

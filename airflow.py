@@ -7,11 +7,11 @@ import requests
 from base64 import b64encode
 from datetime import datetime, timedelta
 
-class AirflowReq(object):
+class AirflowMonitor(object):
 
     def __init__(self, logger: object = None) -> None:
         super().__init__()
-        self.className = 'AirflowReq'
+        self.className = 'AirflowMonitor'
         self.initializeLogger(logger=logger)
         self.setDefaults()
 
@@ -27,21 +27,28 @@ class AirflowReq(object):
         else:
             self.logger = logger
 
-    def setDefaults(self) -> None:
-        self.logger.info('Inicializando variaveis')
+    def setCookiesExpiration(self):
+        # O token da sessão expira após 12 horas, criando controle para 9 horas por segurança.
+        self.cookies_expiration = datetime.now() + timedelta(hours=9)
+
+    def getEnvironmentVariables(self):
         self.baseURL = os.environ.get('AIRFLOW_URL')
-        airflow_username = os.environ.get('AIRFLOW_USERNAME')
-        airflow_password = os.environ.get('AIRFLOW_PASSWORD')
-        if None in (self.baseURL, airflow_username, airflow_password):
+        self.airflow_username = os.environ.get('AIRFLOW_USERNAME')
+        self.airflow_password = os.environ.get('AIRFLOW_PASSWORD')
+        if 'NULL' in (self.baseURL, self.airflow_username, self.airflow_password):
             error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
             raise ValueError(error)
-        base64_bytes = b64encode((f"{airflow_username}:{airflow_password}").encode("ascii")).decode("ascii")
+
+    def setDefaults(self) -> None:
+        self.logger.info('Inicializando variaveis')
+        self.getEnvironmentVariables()
+        base64_bytes = b64encode((f"{self.airflow_username}:{self.airflow_password}").encode("ascii")).decode("ascii")
         self.headers = {
             'Content-Type': 'application/json',
             'Authorization' : f'Basic {base64_bytes}'
         }
         self.cookies = None
-        self.cookies_expiration = datetime.now() + timedelta(hours=9)
+        self.setCookiesExpiration()
 
     def executeRequest(self, method:str, url:str, payload:json=None):
         if (datetime.now() >= self.cookies_expiration):
@@ -201,7 +208,7 @@ if __name__ == "__main__":
     except:
         print(f'data em formato inválido: {args.dataFim}, formato esperado: YYYY-MM-DD')
         sys.exit(1)
-    airflow = AirflowReq()
+    airflow = AirflowMonitor()
     airflow.run(end_date=dataFim,
                 qtdDias=args.qtdDias,
                 prefix=args.prefix,

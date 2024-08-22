@@ -9,7 +9,12 @@ Para execução em ambiente próprio, ou em alguma ferramenta gerenciada que per
 
 > AIRFLOW_PASSWORD="YOUR AIRFLOW PASSWORD" -> Senha do usuário que é utilizada para fazer login no Airflow
 
-Nesse caso pode deixar as variáveis relacionadas a AWS com um valor padrão.
+## Compilação do container
+Para dar o build no container deverá executar o comando:
+
+```sh
+docker build -t airflow-monitor:latest --build-arg AIRFLOW_URL=YOUR-AIRFLOW-URL --build-arg AIRFLOW_USERNAME=YOUR-AIRFLOW-USERNAME --build-arg AIRFLOW_PASSWORD=YOUR-AIRFLOW-PASSWORD . --no-cache
+```
 
 # Configuração do docker para uso no ambiente AWS utilizando o MWAA
 
@@ -22,13 +27,11 @@ Para execução no MWAA da AWS será necessário alterar as seguintes informaç�
 
 > AWS_AIRFLOW_NAME="YOUR AIRFLOW NAME ON MWAA" -> Nome do ambiente do Airflow configurado no MWAA
 
-Nesse caso pode deixar as variáveis relacionadas ao login com usuário e senha com um valor padrão.
-
-# Compilação do container
+## Compilação do container
 Para dar o build no container deverá executar o comando:
 
 ```sh
-docker build -t airflow-monitor:latest --build-arg AWS_REGION=YOUR-REGION --build-arg AWS_ACCESS_KEY_ID=YOUR-KEY-ID --build-arg AWS_SECRET_ACCESS_KEY=YOUR-SECRET-KEY --build-arg AWS_AIRFLOW_NAME=YOUR-AIRFLOW-NAME --build-arg AIRFLOW_URL=YOUR-AIRFLOW-URL --build-arg AIRFLOW_USERNAME=YOUR-AIRFLOW-USERNAME --build-arg AIRFLOW_PASSWORD=YOUR-AIRFLOW-PASSWORD . --no-cache
+docker build -t airflow-monitor:latest --build-arg AWS_REGION=YOUR-REGION --build-arg AWS_ACCESS_KEY_ID=YOUR-KEY-ID --build-arg AWS_SECRET_ACCESS_KEY=YOUR-SECRET-KEY --build-arg AWS_AIRFLOW_NAME=YOUR-AIRFLOW-NAME --build-arg . --no-cache
 ```
 
 # Como executar
@@ -42,7 +45,7 @@ Os dois scripts possuem exatamente a mesma forma de ser executado, alterando ape
 O primeiro passo será de entrar no Container compilado:
 
 ```sh
-docker run --rm -it --entrypoint bash airflow-monitor:latest
+docker run --rm -it --name=airflow_monitor --entrypoint bash airflow-monitor:latest 
 ```
 
 Uma vez no container poderá ser executado o script com seus parâmetros:

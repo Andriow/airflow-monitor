@@ -36,11 +36,10 @@ class TestAirflow(unittest.TestCase):
         self.assertIsNone(cookies)
 
     def testGetEnvironmentVariables(self):
-        del os.environ['AIRFLOW_URL']
-        self.airflow.getEnvironmentVariables()
+        os.environ['AIRFLOW_URL'] = 'NULL'
         error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
         with self.assertRaises(ValueError) as ctx:
-            self.airflow.setDefaults()
+            self.airflow.getEnvironmentVariables()
         self.assertEqual(error, str(ctx.exception))
 
     def testSetCookiesExpiration(self):

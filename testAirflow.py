@@ -64,7 +64,7 @@ class TestAirflow(unittest.TestCase):
         command = 'airflow.py -d 2024-08 -q 10 -q 10 -p DL -s prd'
         error = f'data em formato inválido: 2024-08, formato esperado: YYYY-MM-DD'
         with self.assertRaises(ValueError) as ctx:
-            self.airflow.main(shlex.split(f'-d {command}'))
+            self.airflow.main(shlex.split(command))
         self.assertEqual(error, str(ctx.exception))
 
     def testLogger01(self):

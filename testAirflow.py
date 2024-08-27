@@ -1,4 +1,5 @@
 import os
+import shlex
 import logging
 import unittest
 from datetime import datetime
@@ -18,6 +19,53 @@ class TestAirflow(unittest.TestCase):
         l = logging.getLogger(self.className)
         l.setLevel(logging.ERROR)
         self.airflow = AirflowMonitor(logger = l)
+
+    def testParseArgs01(self):
+        command = ''
+        args = self.airflow.parseArgs(shlex.split(command))
+        self.assertEqual(args.dataFim, datetime.today().strftime('%Y-%m-%d'))
+        self.assertEqual(args.qtdDias, 90)
+        self.assertIsNone(args.prefix)
+        self.assertIsNone(args.suffix)
+
+    def testParseArgs02(self):
+        command = '-d 2024-03-15 -q 10'
+        args = self.airflow.parseArgs(shlex.split(command))
+        self.assertEqual(args.dataFim, '2024-03-15')
+        self.assertEqual(args.qtdDias, 10)
+        self.assertIsNone(args.prefix)
+        self.assertIsNone(args.suffix)
+    
+    def testParseArgs03(self):
+        command = '-p DL'
+        args = self.airflow.parseArgs(shlex.split(command))
+        self.assertEqual(args.dataFim, datetime.today().strftime('%Y-%m-%d'))
+        self.assertEqual(args.qtdDias, 90)
+        self.assertEqual(args.prefix, 'DL')
+        self.assertIsNone(args.suffix)
+
+    def testParseArgs04(self):
+        command = '-s prd'
+        args = self.airflow.parseArgs(shlex.split(command))
+        self.assertEqual(args.dataFim, datetime.today().strftime('%Y-%m-%d'))
+        self.assertEqual(args.qtdDias, 90)
+        self.assertIsNone(args.prefix)
+        self.assertEqual(args.suffix, 'prd')
+
+    def testParseArgs05(self):
+        command = '-d 2024-03-15 -q 10 -q 10 -p DL -s prd'
+        args = self.airflow.parseArgs(shlex.split(command))
+        self.assertEqual(args.dataFim, '2024-03-15')
+        self.assertEqual(args.qtdDias, 10)
+        self.assertEqual(args.prefix, 'DL')
+        self.assertEqual(args.suffix, 'prd')
+
+    def testMainInvalidDate(self):
+        command = 'airflow.py -d 2024-08 -q 10 -q 10 -p DL -s prd'
+        error = f'data em formato inválido: 2024-08, formato esperado: YYYY-MM-DD'
+        with self.assertRaises(ValueError) as ctx:
+            self.airflow.main(shlex.split(command))
+        self.assertEqual(error, str(ctx.exception))
 
     def testLogger01(self):
         airflow = AirflowMonitor()

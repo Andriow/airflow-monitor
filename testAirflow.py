@@ -64,7 +64,7 @@ class TestAirflow(unittest.TestCase):
         dataFim = '2024-08'
         error = f'data em formato inválido: {dataFim}, formato esperado: YYYY-MM-DD'
         with self.assertRaises(ValueError) as ctx:
-            self.airflow.parseArgs(shlex.split(f'-d {dataFim}'))
+            self.airflow.main(shlex.split(f'-d {dataFim}'))
         self.assertEqual(error, str(ctx.exception))
 
     def testLogger01(self):

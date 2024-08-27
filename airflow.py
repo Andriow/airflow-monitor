@@ -201,10 +201,12 @@ class AirflowMonitor(object):
                             help='Prefixo que a DAG deverá ter no nome para entrar na análise.')
         parser.add_argument('-s', '--suffix', type=str, default=None, 
                             help='Sufixo que a DAG deverá ter no nome para entrar na análise.')
-        args = parser.parse_args()
+        args = parser.parse_args(arg_list)
         return args
 
     def main(self, arg_list: list[str] | None):
+        #remover o primeiro argumento que sempre será o nome do arquivo executado.
+        arg_list.pop(0)
         args = self.parseArgs(arg_list)
         try:
             date_format = '%Y-%m-%d'

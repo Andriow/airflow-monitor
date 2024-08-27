@@ -191,7 +191,7 @@ class AirflowMonitor(object):
         consolidate = self.consolidateResults(result_list=result_list)
         self.logger.info(f'resultado final: {consolidate}')
 
-    def parseArgs(arg_list: list[str] | None):
+    def parseArgs(self, arg_list: list[str] | None):
         parser = argparse.ArgumentParser(description='Monitoramento de dags com erros no airflow.')
         parser.add_argument('-d', '--dataFim', type=str, default=datetime.today().strftime('%Y-%m-%d'), 
                             help='Data da última execução a ser verificada. Formato: YYYY-MM-DDD. Default = hoje.')
@@ -220,4 +220,4 @@ class AirflowMonitor(object):
 
 if __name__ == "__main__":
     airflow = AirflowMonitor()
-    airflow.main()
+    airflow.main(sys.argv)

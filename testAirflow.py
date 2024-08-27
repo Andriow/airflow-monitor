@@ -22,7 +22,7 @@ class TestAirflow(unittest.TestCase):
 
     def testParseArgs(self):
         command = ''
-        args = self.airflow.parseAargs(shlex.split(command))
+        args = self.airflow.parseArgs(shlex.split(command))
         self.assertEqual(args.dataFim, datetime.today().strftime('%Y-%m-%d'))
         self.assertEqual(args.qtdDias, 90)
         self.assertIsNone(args.prefix)

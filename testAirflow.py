@@ -1,4 +1,5 @@
 import os
+import shlex
 import logging
 import unittest
 from datetime import datetime
@@ -18,6 +19,14 @@ class TestAirflow(unittest.TestCase):
         l = logging.getLogger(self.className)
         l.setLevel(logging.ERROR)
         self.airflow = AirflowMonitor(logger = l)
+
+    def testParseArgs(self):
+        command = ''
+        args = self.airflow.parseAargs(shlex.split(command))
+        self.assertEqual(args.dataFim, datetime.today().strftime('%Y-%m-%d'))
+        self.assertEqual(args.qtdDias, 90)
+        self.assertIsNone(args.prefix)
+        self.assertIsNone(args.suffix)
 
     def testLogger01(self):
         airflow = AirflowMonitor()

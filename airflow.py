@@ -81,7 +81,7 @@ class AirflowMonitor(object):
         dag_ids = self.extractIdsFromResponse(DAG_response.json())
         number_of_itr = (total_entries // limit_per_itr)
         for i in range(number_of_itr):
-            num_of_record = len(dag_ids) * (i+1)
+            num_of_record = len(dag_ids)
             new_airflow_url = f"{url}&offset={num_of_record}"
             response = self.executeRequest('GET',new_airflow_url)
             ids = self.extractIdsFromResponse(response.json())

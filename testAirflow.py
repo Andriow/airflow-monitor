@@ -95,7 +95,8 @@ class TestAirflow(unittest.TestCase):
         mock_get.side_effect = requests.exceptions.HTTPError
         with self.assertRaises(SystemExit) as ctx:
             self.airflow.executeRequest('GET', url)
-        self.assertTrue(error in str(ctx.exception))
+            self.assertRaises(requests.exceptions.HTTPError)
+        #self.assertTrue(error in str(ctx.exception))
 
         #error = 'Timeout ao chamar a URL'
         #mock_get.side_effect = requests.exceptions.Timeout

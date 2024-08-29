@@ -87,10 +87,30 @@ class TestAirflow(unittest.TestCase):
 
     @patch('requests.get')
     def testExecuteRequest(self, mock_get):
+        url = f'{self.baseURL}/api/v1/dags?only_active=true&limit=100'
+        
         error = 'HTTPError ao chamar a URL'
         mock_get.side_effect = requests.exceptions.HTTPError
-        with self.assertRaises(ValueError) as ctx:
-            self.airflow.executeRequest('GET', 'www.test.com')
+        with self.assertRaises(requests.exceptions.HTTPError) as ctx:
+            self.airflow.executeRequest('GET', url)
+        self.assertTrue(error in str(ctx.exception))
+
+        error = 'Timeout ao chamar a URL'
+        mock_get.side_effect = requests.exceptions.Timeout
+        with self.assertRaises(requests.exceptions.Timeout) as ctx:
+            self.airflow.executeRequest('GET', url)
+        self.assertTrue(error in str(ctx.exception))
+
+        error = 'TooManyRedirects ao chamar a URL'
+        mock_get.side_effect = requests.exceptions.TooManyRedirects
+        with self.assertRaises(requests.exceptions.TooManyRedirects) as ctx:
+            self.airflow.executeRequest('GET', url)
+        self.assertTrue(error in str(ctx.exception))
+
+        error = 'Erro ao chamar a URL'
+        mock_get.side_effect = requests.exceptions.RequestException
+        with self.assertRaises(requests.exceptions.RequestException) as ctx:
+            self.airflow.executeRequest('GET', url)
         self.assertTrue(error in str(ctx.exception))
 
     def testGetEnvironmentVariables(self):

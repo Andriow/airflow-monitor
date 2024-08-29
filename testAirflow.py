@@ -86,12 +86,12 @@ class TestAirflow(unittest.TestCase):
         self.assertIsNone(cookies)
 
     @patch('requests.get')
-    def testExecuteRequest(self, mock_get, mock_stdout, mock_exit):
+    def testExecuteRequest(self, mock_get):
         error = 'HTTPError ao chamar a URL'
         mock_get.side_effect = requests.exceptions.HTTPError
-        self.airflow.executeRequest('GET', 'www.test.com')
-        mock_exit.assert_called_once_with(1)
-        self.assertTrue(error in mock_stdout.getvalue())
+        with self.assertRaises(ValueError) as ctx:
+            self.airflow.executeRequest('GET', 'www.test.com')
+        self.assertTrue(error in str(ctx.exception))
 
     def testGetEnvironmentVariables(self):
         os.environ['AIRFLOW_URL'] = 'NULL'

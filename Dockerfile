@@ -28,7 +28,7 @@ ENV PYTHONPATH /monitor
 ENV TZ=America/Fortaleza
 
 RUN apt update && \
-    apt install -y apt-utils gcc g++ python3-dev curl apt-utils apt-transport-https gnupg2 openssl nano && \
+    apt install -y apt-utils gcc g++ python3-dev curl apt-transport-https gnupg2 openssl nano && \
     apt upgrade -y && \
     pip install --disable-pip-version-check -r requirements.txt && \
     apt autoremove -y && apt clean && rm -rf ~/.cache/pip/ && \

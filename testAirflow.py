@@ -86,16 +86,14 @@ class TestAirflow(unittest.TestCase):
         self.assertTrue('Authorization' in headers)
         self.assertIsNone(cookies)
 
-    @patch('sys.exit')
     @patch('sys.stdout', new_callable=StringIO)
     @patch('requests.get')
-    def testExecuteRequest(self, mock_get, mock_stdout, mock_exit):
+    def testExecuteRequest(self, mock_get, mock_stdout):
         url = f'http://www.google.com/'
         
         error = 'HTTPError ao chamar a URL'
         mock_get.side_effect = requests.exceptions.HTTPError
         self.airflow.executeRequest('GET', url)
-        mock_exit.assert_called_once_with(1)
         self.assertTrue(error in str(mock_stdout.getvalue()))
 
         #error = 'Timeout ao chamar a URL'

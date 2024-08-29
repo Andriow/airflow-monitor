@@ -6,7 +6,7 @@ import requests
 from io import StringIO
 from datetime import datetime
 from unittest.mock import patch
-from airflow import AirflowMonitor, CustoRequestException
+from airflow import AirflowMonitor
 
 class TestAirflow(unittest.TestCase):
     def setUp(self):
@@ -89,31 +89,12 @@ class TestAirflow(unittest.TestCase):
     @patch('sys.stdout', new_callable=StringIO)
     @patch('requests.get')
     def testExecuteRequest(self, mock_get, mock_stdout):
-        url = f'http://www.google.com/'
+        url = f'http://www.google.com/nothere'
         
-        error = 'HTTPError ao chamar a URL'
-        mock_get.side_effect = requests.exceptions.HTTPError
-        with self.assertRaises(CustoRequestException) as ctx:
+        error = 'Erro ao chamar a URL'
+        with self.assertRaises(requests.exceptions.RequestException) as ctx:
             self.airflow.executeRequest('GET', url)
         self.assertTrue(error in str(ctx.exception))
-
-        #error = 'Timeout ao chamar a URL'
-        #mock_get.side_effect = requests.exceptions.Timeout
-        #with self.assertRaises(SystemExit) as ctx:
-        #    self.airflow.executeRequest('GET', url)
-        #self.assertTrue(error in str(ctx.exception))
-#
-        #error = 'TooManyRedirects ao chamar a URL'
-        #mock_get.side_effect = requests.exceptions.TooManyRedirects
-        #with self.assertRaises(SystemExit) as ctx:
-        #    self.airflow.executeRequest('GET', url)
-        #self.assertTrue(error in str(ctx.exception))
-#
-        #error = 'Erro ao chamar a URL'
-        #mock_get.side_effect = requests.exceptions.RequestException
-        #with self.assertRaises(rSystemExit) as ctx:
-        #    self.airflow.executeRequest('GET', url)
-        #self.assertTrue(error in str(ctx.exception))
 
     def testGetEnvironmentVariables(self):
         os.environ['AIRFLOW_URL'] = 'NULL'

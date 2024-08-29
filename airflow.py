@@ -7,10 +7,6 @@ import requests
 from base64 import b64encode
 from datetime import datetime, timedelta
 
-class CustoRequestException(Exception):
-    def __init__(self, message):
-        self.message = message
-
 class AirflowMonitor(object):
 
     def __init__(self, logger: object = None) -> None:
@@ -65,18 +61,9 @@ class AirflowMonitor(object):
                                         headers=self.headers,
                                         cookies=self.cookies)
             response.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            error = f'HTTPError ao chamar a URL: {url} \n {e}'
-            raise CustoRequestException(error)
-        except requests.exceptions.Timeout as e:
-            error = f'Timeout ao chamar a URL: {url} \n {e}'
-            raise CustoRequestException(error)
-        except requests.exceptions.TooManyRedirects as e:
-            error = f'TooManyRedirects ao chamar a URL: {url} \n {e}'
-            raise CustoRequestException(error)
         except requests.exceptions.RequestException as e:
             error = f'Erro ao chamar a URL: {url} \n {e}'
-            raise CustoRequestException(error)
+            raise SystemExit(error)
 
         return response
 

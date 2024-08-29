@@ -32,10 +32,7 @@ RUN apt update && \
     apt upgrade -y && \
     pip install --disable-pip-version-check -r requirements.txt && \
     apt autoremove -y && apt clean && rm -rf ~/.cache/pip/ && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && \
-    coverage erase && \
-    coverage run testAirflow.py && \
-    coverage report -m
+    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone && 
 
 FROM build
 

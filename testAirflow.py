@@ -6,7 +6,7 @@ import requests
 from io import StringIO
 from datetime import datetime
 from unittest.mock import patch
-from airflow import AirflowMonitor
+from airflow import AirflowMonitor, CustoRequestException
 
 class TestAirflow(unittest.TestCase):
     def setUp(self):
@@ -93,10 +93,9 @@ class TestAirflow(unittest.TestCase):
         
         error = 'HTTPError ao chamar a URL'
         mock_get.side_effect = requests.exceptions.HTTPError
-        with self.assertRaises(SystemExit) as ctx:
+        with self.assertRaises(CustoRequestException) as ctx:
             self.airflow.executeRequest('GET', url)
-            self.assertRaises(requests.exceptions.HTTPError)
-        #self.assertTrue(error in str(ctx.exception))
+        self.assertTrue(error in str(ctx.exception))
 
         #error = 'Timeout ao chamar a URL'
         #mock_get.side_effect = requests.exceptions.Timeout

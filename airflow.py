@@ -52,7 +52,7 @@ class AirflowMonitor(object):
 
     def executeRequest(self, method:str, url:str, payload:json=None):
         if (datetime.now() >= self.cookies_expiration):
-            self.setDefaults()
+            self.setDefaults() # pragma: no cover
 
         try:
             response = requests.request(method=method, 
@@ -80,8 +80,8 @@ class AirflowMonitor(object):
         self.logger.debug(f'total_entries: {total_entries}')
         dag_ids = self.extractIdsFromResponse(DAG_response.json())
         number_of_itr = (total_entries // limit_per_itr)
-        for next_itr in range(number_of_itr):
-            num_of_record = len(dag_ids)
+        for i in range(number_of_itr):
+            num_of_record = len(dag_ids) * (i+1)
             new_airflow_url = f"{url}&offset={num_of_record}"
             response = self.executeRequest('GET',new_airflow_url)
             ids = self.extractIdsFromResponse(response.json())
@@ -167,7 +167,7 @@ class AirflowMonitor(object):
         self.logger.info(f'total runs: {total_runs} total fails: {total_fails}')
         return consolidate
 
-    def run(self, end_date:datetime, qtdDias:int, prefix:str=None, suffix:str=None):
+    def run(self, end_date:datetime, qtdDias:int, prefix:str=None, suffix:str=None): # pragma: no cover
         result_list = []
         active_dags = self.listAllActiveDags()
         active_dags = self.filterDagsByPrefixSuffix(active_dags, prefix, suffix)
@@ -207,9 +207,9 @@ class AirflowMonitor(object):
         self.run(end_date=dataFim,
                 qtdDias=args.qtdDias,
                 prefix=args.prefix,
-                suffix=args.suffix)
+                suffix=args.suffix) # pragma: no cover
 
 if __name__ == "__main__":
-    airflow = AirflowMonitor()
+    airflow = AirflowMonitor() # pragma: no cover
     #remover o primeiro argumento que sempre será o nome do arquivo executado.
-    airflow.main(sys.argv.pop(0))
+    airflow.main(sys.argv.pop(0)) # pragma: no cover

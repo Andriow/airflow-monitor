@@ -87,7 +87,7 @@ class TestAirflow(unittest.TestCase):
 
     @patch('requests.get')
     def testExecuteRequest(self, mock_get):
-        url = f'{self.baseURL}/api/v1/dags?only_active=true&limit=100'
+        url = f'{self.airflow.baseURL}/api/v1/dags?only_active=true&limit=100'
         
         error = 'HTTPError ao chamar a URL'
         mock_get.side_effect = requests.exceptions.HTTPError

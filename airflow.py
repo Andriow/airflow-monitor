@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import shlex
 import logging
 import argparse
 import requests
@@ -212,4 +213,5 @@ class AirflowMonitor(object):
 if __name__ == "__main__":
     airflow = AirflowMonitor() # pragma: no cover
     #remover o primeiro argumento que sempre será o nome do arquivo executado.
-    airflow.main(sys.argv.pop(0)) # pragma: no cover
+    args = shlex.split(sys.argv)
+    airflow.main(args.pop(0)) # pragma: no cover

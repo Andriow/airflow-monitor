@@ -2,7 +2,6 @@ import os
 import shlex
 import logging
 import unittest
-import requests
 from io import StringIO
 from datetime import datetime
 from unittest.mock import patch

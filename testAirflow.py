@@ -92,7 +92,7 @@ class TestAirflow(unittest.TestCase):
         url = f'http://www.google.com/nothere'
         
         error = 'Erro ao chamar a URL'
-        with self.assertRaises(requests.exceptions.RequestException) as ctx:
+        with self.assertRaises(SystemExit) as ctx:
             self.airflow.executeRequest('GET', url)
         self.assertTrue(error in str(ctx.exception))
 

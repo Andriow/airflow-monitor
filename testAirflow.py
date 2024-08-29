@@ -93,25 +93,25 @@ class TestAirflow(unittest.TestCase):
         
         error = 'HTTPError ao chamar a URL'
         mock_get.side_effect = requests.exceptions.HTTPError
-        self.airflow.executeRequest('GET', url)
-        print(mock_stdout.getvalue())
-        self.assertTrue(error in str(mock_stdout.getvalue()))
+        with self.assertRaises(SystemExit) as ctx:
+            self.airflow.executeRequest('GET', url)
+        self.assertTrue(error in str(ctx.exception))
 
         #error = 'Timeout ao chamar a URL'
         #mock_get.side_effect = requests.exceptions.Timeout
-        #with self.assertRaises(requests.exceptions.Timeout) as ctx:
+        #with self.assertRaises(SystemExit) as ctx:
         #    self.airflow.executeRequest('GET', url)
         #self.assertTrue(error in str(ctx.exception))
 #
         #error = 'TooManyRedirects ao chamar a URL'
         #mock_get.side_effect = requests.exceptions.TooManyRedirects
-        #with self.assertRaises(requests.exceptions.TooManyRedirects) as ctx:
+        #with self.assertRaises(SystemExit) as ctx:
         #    self.airflow.executeRequest('GET', url)
         #self.assertTrue(error in str(ctx.exception))
 #
         #error = 'Erro ao chamar a URL'
         #mock_get.side_effect = requests.exceptions.RequestException
-        #with self.assertRaises(requests.exceptions.RequestException) as ctx:
+        #with self.assertRaises(rSystemExit) as ctx:
         #    self.airflow.executeRequest('GET', url)
         #self.assertTrue(error in str(ctx.exception))
 

@@ -2,7 +2,9 @@ import os
 import shlex
 import logging
 import unittest
+import requests
 from datetime import datetime
+from unittest.mock import patch
 from airflow import AirflowMonitor
 
 class TestAirflow(unittest.TestCase):
@@ -82,6 +84,14 @@ class TestAirflow(unittest.TestCase):
         self.assertTrue('Content-Type' in headers)
         self.assertTrue('Authorization' in headers)
         self.assertIsNone(cookies)
+
+    @patch('requests.get')
+    def testExecuteRequest(self, mock_get, mock_stdout, mock_exit):
+        error = 'HTTPError ao chamar a URL'
+        mock_get.side_effect = requests.exceptions.HTTPError
+        self.airflow.executeRequest('GET', 'www.test.com')
+        mock_exit.assert_called_once_with(1)
+        self.assertTrue(error in mock_stdout.getvalue())
 
     def testGetEnvironmentVariables(self):
         os.environ['AIRFLOW_URL'] = 'NULL'

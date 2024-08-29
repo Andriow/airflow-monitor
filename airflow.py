@@ -64,10 +64,10 @@ class AirflowMonitor(object):
         except requests.exceptions.HTTPError as e:
             error = f'HTTPError ao chamar a URL: {url} \n {e}'
             raise SystemExit(error)
-        except requests.exceptions.Timeout:
+        except requests.exceptions.Timeout as e:
             error = f'Timeout ao chamar a URL: {url} \n {e}'
             raise SystemExit(error)
-        except requests.exceptions.TooManyRedirects:
+        except requests.exceptions.TooManyRedirects as e:
             error = f'TooManyRedirects ao chamar a URL: {url} \n {e}'
             raise SystemExit(error)
         except requests.exceptions.RequestException as e:

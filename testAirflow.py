@@ -83,6 +83,14 @@ class TestAirflow(unittest.TestCase):
         self.assertTrue('Authorization' in headers)
         self.assertIsNone(cookies)
 
+    def testExecuteRequest(self, mock_get, mock_stdout):
+        url = f'http://www.google.com/nothere'
+        
+        error = 'Erro ao chamar a URL'
+        with self.assertRaises(SystemExit) as ctx:
+            self.airflow.executeRequest('GET', url)
+        self.assertTrue(error in str(ctx.exception))
+
     def testGetEnvironmentVariables(self):
         os.environ['AIRFLOW_URL'] = 'NULL'
         error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'

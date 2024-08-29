@@ -2,9 +2,7 @@ import os
 import shlex
 import logging
 import unittest
-from io import StringIO
 from datetime import datetime
-from unittest.mock import patch
 from airflow import AirflowMonitor
 
 class TestAirflow(unittest.TestCase):
@@ -85,8 +83,6 @@ class TestAirflow(unittest.TestCase):
         self.assertTrue('Authorization' in headers)
         self.assertIsNone(cookies)
 
-    @patch('sys.stdout', new_callable=StringIO)
-    @patch('requests.get')
     def testExecuteRequest(self, mock_get, mock_stdout):
         url = f'http://www.google.com/nothere'
         

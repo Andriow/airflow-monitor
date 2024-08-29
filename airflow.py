@@ -205,8 +205,6 @@ class AirflowMonitor(object):
         return args
 
     def main(self, arg_list: list[str] | None):
-        #remover o primeiro argumento que sempre será o nome do arquivo executado.
-        arg_list.pop(0)
         args = self.parseArgs(arg_list)
         try:
             date_format = '%Y-%m-%d'
@@ -222,4 +220,5 @@ class AirflowMonitor(object):
 
 if __name__ == "__main__":
     airflow = AirflowMonitor()
-    airflow.main(sys.argv)
+    #remover o primeiro argumento que sempre será o nome do arquivo executado.
+    airflow.main(sys.argv.pop(0))

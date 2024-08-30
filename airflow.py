@@ -200,7 +200,7 @@ class AirflowMonitor(object):
     def main(self, arg_list: list[str] | None):
         args = self.parseArgs(arg_list)
         if args.verbose:
-            self.initializeLogger(level=logging.DEBUG)
+            logging.basicConfig(level=logging.DEBUG, force=True)
         
         try:
             date_format = '%Y-%m-%d'

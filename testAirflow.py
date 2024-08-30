@@ -105,7 +105,7 @@ class TestAirflow(unittest.TestCase):
         self.assertTrue('Authorization' in headers)
         self.assertIsNone(cookies)
 
-    def testExecuteRequest(self, mock_get, mock_stdout):
+    def testExecuteRequest(self):
         url = f'http://www.google.com/nothere'
         
         error = 'Erro ao chamar a URL'

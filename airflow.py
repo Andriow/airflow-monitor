@@ -20,7 +20,7 @@ class AirflowMonitor(object):
             self.logger = logging.getLogger(self.className)
             self.logger.setLevel(level)
             ch = logging.StreamHandler()
-            formatter = logging.Formatter("%(asctime)s,%(msecs)03d [%(filename)s:%(lineno)d] - %(levelname)s - %(message)s")
+            formatter = logging.Formatter("%(asctime)s [%(filename)s:%(lineno)d] - %(levelname)s - %(message)s")
             ch.setFormatter(formatter)
             ch.addFilter(logging.Filter(self.className))
             self.logger.addHandler(ch)

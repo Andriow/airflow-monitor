@@ -20,6 +20,14 @@ class TestAirflow(unittest.TestCase):
         l.setLevel(logging.ERROR)
         self.airflow = AirflowMonitor(logger = l)
 
+    def testCleanArgs(self):
+        arg_list = ['a.py', 'b', 'c']
+        to_test = ['b', 'c']
+        lst = self.airflow.cleanArgs(arg_list=arg_list)
+        self.assertEqual(lst, to_test)
+        lst = self.airflow.cleanArgs(arg_list=lst)
+        self.assertEqual(lst, to_test)
+
     def testParseArgs01(self):
         command = ''
         args = self.airflow.parseArgs(shlex.split(command))
@@ -89,14 +97,19 @@ class TestAirflow(unittest.TestCase):
         self.assertEqual(logging.DEBUG, self.airflow.logger.level)
         self.assertEqual(error, str(ctx.exception))
 
-    def testLogger01(self):
+    def testLoggerEmptyLogger(self):
         airflow = AirflowMonitor()
         logger = airflow.logger
         self.assertEqual(logger.name, 'AirflowMonitor')
     
-    def testLogger02(self):
+    def testLoggerExistingLogger(self):
         logger = self.airflow.logger
         self.assertEqual(logger.name, self.className)
+
+    def testLoggerExistingLoggerAndChangeLevel(self):
+        logger = self.airflow.logger
+        self.airflow.initializeLogger(logger=logger, level=logging.DEBUG)
+        self.assertEqual(logging.DEBUG, self.airflow.logger.level)
 
     def testSetDefaults(self):
         headers = self.airflow.headers

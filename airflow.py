@@ -26,6 +26,8 @@ class AirflowMonitor(object):
             self.logger.addHandler(ch)
         else:
             self.logger = logger
+            if self.logger.level != level:
+                self.logger.setLevel(level)
 
     def setCookiesExpiration(self):
         # O token da sessão expira após 12 horas, criando controle para 9 horas por segurança.
@@ -171,6 +173,7 @@ class AirflowMonitor(object):
         result_list = []
         active_dags = self.listAllActiveDags()
         active_dags = self.filterDagsByPrefixSuffix(active_dags, prefix, suffix)
+        active_dags = set(active_dags) # removing duplicates
         start_date = (end_date - timedelta(qtdDias))
         self.logger.info(f'Consultando de {start_date} ate {end_date}')
         for dag in active_dags:
@@ -196,11 +199,18 @@ class AirflowMonitor(object):
                             help='O nível de verbose por padrão é logging.INFO, quando passado este argumento altera para logging.DEBUG')
         args = parser.parse_args(arg_list)
         return args
+    
+    def cleanArgs(self, arg_list: list[str] | None):
+        #removing the first item if it is the filename.
+        if('.py' in arg_list[0]):
+            arg_list = arg_list[1:]
+        return arg_list
 
     def main(self, arg_list: list[str] | None):
+        arg_list = self.cleanArgs(arg_list=arg_list)
         args = self.parseArgs(arg_list)
         if args.verbose:
-            self.initializeLogger(level=logging.DEBUG)
+            self.initializeLogger(logger=self.logger, level=logging.DEBUG)
         
         try:
             date_format = '%Y-%m-%d'
@@ -216,6 +226,4 @@ class AirflowMonitor(object):
 
 if __name__ == "__main__":
     airflow = AirflowMonitor() # pragma: no cover
-    #remover o primeiro argumento que sempre será o nome do arquivo executado.
-    sys.argv.pop(0)
     airflow.main(sys.argv) # pragma: no cover

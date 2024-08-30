@@ -15,10 +15,10 @@ class AirflowMonitor(object):
         self.initializeLogger(logger=logger)
         self.setDefaults()
 
-    def initializeLogger(self, logger: object = None) -> logging.Logger:
+    def initializeLogger(self, logger: object = None, level: int = logging.INFO) -> logging.Logger:
         if logger == None:
             self.logger = logging.getLogger(self.className)
-            self.logger.setLevel(logging.INFO)
+            self.logger.setLevel(level)
             ch = logging.StreamHandler()
             formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
             ch.setFormatter(formatter)
@@ -192,11 +192,16 @@ class AirflowMonitor(object):
                             help='Prefixo que a DAG deverá ter no nome para entrar na análise.')
         parser.add_argument('-s', '--suffix', type=str, default=None, 
                             help='Sufixo que a DAG deverá ter no nome para entrar na análise.')
+        parser.add_argument('-v', '--verbose', action='store_true',
+                            help='O nível de verbose por padrão é logging.INFO, quando passado este argumento altera para logging.DEBUG')
         args = parser.parse_args(arg_list)
         return args
 
     def main(self, arg_list: list[str] | None):
         args = self.parseArgs(arg_list)
+        if args.verbose:
+            self.initializeLogger(level=logging.DEBUG)
+        
         try:
             date_format = '%Y-%m-%d'
             dataFim = datetime.strptime(args.dataFim, date_format)

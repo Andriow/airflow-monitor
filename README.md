@@ -52,7 +52,7 @@ Uma vez no container poderá ser executado o script com seus parâmetros:
 
 ```sh
 python3 airflow.py --help
-usage: airflow.py [-h] [-d DATAFIM] [-q QTDDIAS] [-p PREFIX] [-s SUFFIX]
+usage: airflow.py [-h] [-d DATAFIM] [-q QTDDIAS] [-p PREFIX] [-s SUFFIX] [-v]
 
 Monitoramento de dags com erros no airflow.
 
@@ -66,6 +66,7 @@ options:
                         Prefixo que a DAG deverá ter no nome para entrar na análise.
   -s SUFFIX, --suffix SUFFIX
                         Sufixo que a DAG deverá ter no nome para entrar na análise.
+  -v, --verbose         O nível de verbose por padrão é logging.INFO, quando passado este argumento altera para logging.DEBUG
 ```
 
 Para uma execução de teste, que irá retornar o log de execução dos últimos 10 dias, rodar da seguinte forma:

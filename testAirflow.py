@@ -27,6 +27,7 @@ class TestAirflow(unittest.TestCase):
         self.assertEqual(args.qtdDias, 90)
         self.assertIsNone(args.prefix)
         self.assertIsNone(args.suffix)
+        self.assertFalse(args.verbose)
 
     def testParseArgs02(self):
         command = '-d 2024-03-15 -q 10'
@@ -35,6 +36,7 @@ class TestAirflow(unittest.TestCase):
         self.assertEqual(args.qtdDias, 10)
         self.assertIsNone(args.prefix)
         self.assertIsNone(args.suffix)
+        self.assertFalse(args.verbose)
     
     def testParseArgs03(self):
         command = '-p DL'
@@ -43,6 +45,7 @@ class TestAirflow(unittest.TestCase):
         self.assertEqual(args.qtdDias, 90)
         self.assertEqual(args.prefix, 'DL')
         self.assertIsNone(args.suffix)
+        self.assertFalse(args.verbose)
 
     def testParseArgs04(self):
         command = '-s prd'
@@ -51,6 +54,7 @@ class TestAirflow(unittest.TestCase):
         self.assertEqual(args.qtdDias, 90)
         self.assertIsNone(args.prefix)
         self.assertEqual(args.suffix, 'prd')
+        self.assertFalse(args.verbose)
 
     def testParseArgs05(self):
         command = '-d 2024-03-15 -q 10 -q 10 -p DL -s prd'
@@ -59,12 +63,30 @@ class TestAirflow(unittest.TestCase):
         self.assertEqual(args.qtdDias, 10)
         self.assertEqual(args.prefix, 'DL')
         self.assertEqual(args.suffix, 'prd')
+        self.assertFalse(args.verbose)
+
+    def testParseArgs06(self):
+        command = '-v'
+        args = self.airflow.parseArgs(shlex.split(command))
+        self.assertEqual(args.dataFim, datetime.today().strftime('%Y-%m-%d'))
+        self.assertEqual(args.qtdDias, 90)
+        self.assertIsNone(args.prefix)
+        self.assertIsNone(args.suffix)
+        self.assertTrue(args.verbose)
 
     def testMainInvalidDate(self):
         command = '-d 2024-08 -q 10 -q 10 -p DL -s prd'
         error = f'data em formato inválido: 2024-08, formato esperado: YYYY-MM-DD'
         with self.assertRaises(ValueError) as ctx:
             self.airflow.main(shlex.split(command))
+        self.assertEqual(error, str(ctx.exception))
+
+    def testMainInvalidDateAndVerbose(self):
+        command = '-d 2024-08 -q 10 -q 10 -p DL -s prd -v'
+        error = f'data em formato inválido: 2024-08, formato esperado: YYYY-MM-DD'
+        with self.assertRaises(ValueError) as ctx:
+            self.airflow.main(shlex.split(command))
+        self.assertEqual(logging.DEBUG, self.airflow.logger.level)
         self.assertEqual(error, str(ctx.exception))
 
     def testLogger01(self):
@@ -83,7 +105,7 @@ class TestAirflow(unittest.TestCase):
         self.assertTrue('Authorization' in headers)
         self.assertIsNone(cookies)
 
-    def testExecuteRequest(self, mock_get, mock_stdout):
+    def testExecuteRequest(self):
         url = f'http://www.google.com/nothere'
         
         error = 'Erro ao chamar a URL'

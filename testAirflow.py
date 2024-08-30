@@ -20,6 +20,14 @@ class TestAirflow(unittest.TestCase):
         l.setLevel(logging.ERROR)
         self.airflow = AirflowMonitor(logger = l)
 
+    def testCleanArgs(self):
+        arg_list = ['a.py', 'b', 'c']
+        to_test = ['b', 'c']
+        lst = self.airflow.cleanArgs(arg_list=arg_list)
+        self.assertEqual(lst, to_test)
+        lst = self.airflow.cleanArgs(arg_list=lst)
+        self.assertEqual(lst, to_test)
+
     def testParseArgs01(self):
         command = ''
         args = self.airflow.parseArgs(shlex.split(command))

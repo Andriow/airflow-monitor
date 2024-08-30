@@ -34,9 +34,9 @@ class AirflowMonitor(object):
         self.cookies_expiration = datetime.now() + timedelta(hours=9)
 
     def getEnvironmentVariables(self):
-        self.baseURL = os.environ.get('AIRFLOW_URL')
-        self.airflow_username = os.environ.get('AIRFLOW_USERNAME')
-        self.airflow_password = os.environ.get('AIRFLOW_PASSWORD')
+        self.baseURL = os.environ.get('AIRFLOW_URL', 'NULL')
+        self.airflow_username = os.environ.get('AIRFLOW_USERNAME', 'NULL')
+        self.airflow_password = os.environ.get('AIRFLOW_PASSWORD', 'NULL')
         if 'NULL' in (self.baseURL, self.airflow_username, self.airflow_password):
             error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
             raise ValueError(error)

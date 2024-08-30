@@ -14,8 +14,8 @@ class AirflowMWAA(AirflowMonitor):
         self.setDefaults()
 
     def getEnvironmentVariables(self):
-        self.region = os.environ.get('AWS_REGION')
-        self.env_name = os.environ.get('AWS_AIRFLOW_NAME')
+        self.region = os.environ.get('AWS_REGION', 'NULL')
+        self.env_name = os.environ.get('AWS_AIRFLOW_NAME', 'NULL')
         if 'NULL' in (self.region, self.env_name):
             error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
             raise ValueError(error)

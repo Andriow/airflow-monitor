@@ -97,14 +97,19 @@ class TestAirflow(unittest.TestCase):
         self.assertEqual(logging.DEBUG, self.airflow.logger.level)
         self.assertEqual(error, str(ctx.exception))
 
-    def testLogger01(self):
+    def testLoggerEmptyLogger(self):
         airflow = AirflowMonitor()
         logger = airflow.logger
         self.assertEqual(logger.name, 'AirflowMonitor')
     
-    def testLogger02(self):
+    def testLoggerExistingLogger(self):
         logger = self.airflow.logger
         self.assertEqual(logger.name, self.className)
+
+    def testLoggerExistingLoggerAndChangeLevel(self):
+        logger = self.airflow.logger
+        self.airflow.initializeLogger(logger=logger, level=logging.DEBUG)
+        self.assertEqual(logging.DEBUG, self.airflow.logger.level)
 
     def testSetDefaults(self):
         headers = self.airflow.headers

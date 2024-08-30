@@ -26,9 +26,10 @@ class AirflowMonitor(object):
             self.logger.addHandler(ch)
         else:
             self.logger = logger
-            self.logger.setLevel(level)
-            for handler in self.logger.handlers:
-                handler.setLevel(level)
+            if self.logger.level != level:
+                self.logger.setLevel(level)
+                for handler in self.logger.handlers:
+                    handler.setLevel(level)
 
     def setCookiesExpiration(self):
         # O token da sessão expira após 12 horas, criando controle para 9 horas por segurança.

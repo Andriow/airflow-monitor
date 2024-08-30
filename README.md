@@ -52,7 +52,7 @@ Uma vez no container poderá ser executado o script com seus parâmetros:
 
 ```sh
 python3 airflow.py --help
-usage: --help [-h] [-d DATAFIM] [-q QTDDIAS] [-p PREFIX] [-s SUFFIX] [-v]
+usage: airflow.py [-h] [-d DATAFIM] [-q QTDDIAS] [-p PREFIX] [-s SUFFIX] [-v]
 
 Monitoramento de dags com erros no airflow.
 

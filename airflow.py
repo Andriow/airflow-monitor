@@ -5,6 +5,7 @@ import logging
 import argparse
 import requests
 from base64 import b64encode
+from cronometro import Cronometro
 from datetime import datetime, timedelta
 
 class AirflowMonitor(object):
@@ -207,6 +208,7 @@ class AirflowMonitor(object):
         return arg_list
 
     def main(self, arg_list: list[str] | None):
+        cronometro = Cronometro(self.logger)
         arg_list = self.cleanArgs(arg_list=arg_list)
         args = self.parseArgs(arg_list)
         if args.verbose:

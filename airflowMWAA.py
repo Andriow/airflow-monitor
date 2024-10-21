@@ -1,8 +1,7 @@
 import os
 import sys
 import boto3
-import argparse
-from datetime import datetime
+from aws import AWS
 from airflow import AirflowMonitor
 
 # reference: https://docs.aws.amazon.com/pt_br/mwaa/latest/userguide/access-mwaa-apache-airflow-rest-api.html
@@ -20,8 +19,9 @@ class AirflowMWAA(AirflowMonitor):
             error = f'variáveis de configuração setadas de forma errada, revisar o Dockerfile.'
             raise ValueError(error)
 
-    def createFirstAuth(self, region_name:str, env_name:str) -> str:
-        mwaa = boto3.client('mwaa', region_name=region_name)
+    def createFirstAuth(self, env_name:str) -> str:
+        aws = AWS(logger=self.logger)
+        mwaa = aws.createClient(service_name='mwaa')
         response = mwaa.create_web_login_token(Name=env_name)
         self.baseURL = f'https://{response["WebServerHostname"]}'
         return response["WebToken"]
@@ -30,7 +30,7 @@ class AirflowMWAA(AirflowMonitor):
         self.logger.info('Inicializando variaveis')
 
         self.getEnvironmentVariables()
-        web_token = self.createFirstAuth(region_name=self.region, env_name=self.env_name)
+        web_token = self.createFirstAuth(env_name=self.env_name)
         
         self.setCookiesExpiration()
         login_url = f"{self.baseURL}/aws_mwaa/login"
